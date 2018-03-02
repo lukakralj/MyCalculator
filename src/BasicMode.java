@@ -340,6 +340,9 @@ public class BasicMode {
         previousExpressions.push(str);
         Evaluator evaluator = new Evaluator(str);
         String result = evaluator.getResult();
+        if (result.startsWith("-")) {
+            result = "(0-" + result + ")";
+        }
         updateDisplayField(str, result);
         clearInputField();
         updateInputField(result);
