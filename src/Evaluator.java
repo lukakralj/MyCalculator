@@ -39,6 +39,7 @@ public class Evaluator {
     }
 
     private void start(String expression) {
+        
         int index = getOperator(expression);
     }
 
