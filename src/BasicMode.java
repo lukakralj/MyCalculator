@@ -351,10 +351,10 @@ public class BasicMode {
             updateInputField(newCharacter);
             enableDecimalPoint();
         }
-        else if (newCharacter.equals("-") && (inputField.getText().equals("") || inputField.getText().charAt(inputField.getText().length()-1) == '(')) {
+        /*else if (newCharacter.equals("-") && (inputField.getText().equals("") || inputField.getText().charAt(inputField.getText().length()-1) == '(')) {
             updateInputField("-");
             enableDecimalPoint();
-        }
+        }*/
         else {
             showWarning();
         }

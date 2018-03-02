@@ -17,11 +17,11 @@ public class BinaryTree {
     }
 
     public boolean isInternal(Node v) {
-        return hasLeft(v) && hasRight(v);
+        return hasLeft(v) || hasRight(v);
     }
 
     public boolean isExternal(Node v) {
-        return false;
+        return !hasLeft(v) && !hasRight(v);
     }
 
     public boolean hasLeft(Node v) {

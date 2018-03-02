@@ -4,11 +4,17 @@ public class Node {
     private Node left;
     private Node right;
 
-    public Node(Object value, Node parent, Node leftChild, Node rightChild) {
+    public Node(Object value, Node leftChild, Node rightChild) {
         this.value = value;
-        this.parent = parent;
+        parent = null;
         left = leftChild;
         right = rightChild;
+        if (leftChild != null) {
+            leftChild.setParent(this);
+        }
+        if (rightChild != null) {
+            rightChild.setParent(this);
+        }
     }
 
     public Node getParent() {
@@ -23,7 +29,7 @@ public class Node {
         return right;
     }
 
-    public Object getValue(){
+    public Object element(){
         return value;
     }
 
