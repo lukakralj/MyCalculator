@@ -1,5 +1,4 @@
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 public class Evaluator {
@@ -13,9 +12,8 @@ public class Evaluator {
 
     public Evaluator(String expression) {
 
-        String str = expression.replaceAll("sqrt", "" + SQRT);
-        str = str.replaceAll("^2", "" + SQUARE);
-        System.out.println(str);
+        String str = replace(expression);
+        str = getValidSubstring(str);
         if (getOperator(str) == -1) {
             result = "" + extractNumber(str);
         }
@@ -30,15 +28,17 @@ public class Evaluator {
             return "Err";
         }
         return result;
-
     }
 
     private double extractNumber(String str) {
-        str = str.replace('(', ' ').replace(')', ' ').trim();
+        str = str.replace('(', ' ');
+        str = str.replace(')', ' ');
+        str = str.trim();
         return Double.parseDouble(str);
     }
 
     private void makeTree(String expression) {
+        expression = getValidSubstring(expression);
         int index = getOperator(expression);
         if (index == -1) {
             double value = extractNumber(expression);
@@ -54,21 +54,17 @@ public class Evaluator {
                 else {
                     newExpression = expression.substring(0, index);
                 }
-                tree = new BinaryTree(new Node(c, getNewChild(newExpression), null));
+                tree = new BinaryTree(new Node(c, getNewChild(getValidSubstring(newExpression)), null));
             }
             else {
-                String leftExpression = expression.substring(0, index);
-                String rightExpression = expression.substring(index + 1, expression.length());
+                String leftExpression = getValidSubstring(expression.substring(0, index));
+                String rightExpression = getValidSubstring(expression.substring(index + 1, expression.length()));
                 tree = new BinaryTree(new Node(c, getNewChild(leftExpression), getNewChild(rightExpression)));
             }
         }
     }
 
     private int getOperator(String str) {
-        if (str.length() > 2 && str.charAt(0) == '(' && str.charAt(str.length() -1) == ')') {
-            str = str.substring(1, str.length() -1);
-        }
-
         int bracketCounter = 0;
         List<Integer> indexes = new ArrayList<>();
         for (int i = 0; i < str.length(); i++) {
@@ -83,6 +79,7 @@ public class Evaluator {
         if (indexes.size() > 0) {
             return indexes.get(indexes.size()-1);
         }
+
         bracketCounter = 0;
         for (int i = 0; i < str.length(); i++) {
             char c = str.charAt(i);
@@ -120,6 +117,7 @@ public class Evaluator {
     }
 
     private Node getNewChild(String expression) {
+        expression = getValidSubstring(expression);
         int index = getOperator(expression);
         if (index == -1) {
             double value = extractNumber(expression);
@@ -135,11 +133,11 @@ public class Evaluator {
                 else {
                     newExpression = expression.substring(0, index);
                 }
-                return new Node(c, getNewChild(newExpression), null);
+                return new Node(c, getNewChild(getValidSubstring(newExpression)), null);
             }
             else {
-                String leftExpression = expression.substring(0, index);
-                String rightExpression = expression.substring(index + 1, expression.length());
+                String leftExpression = getValidSubstring(expression.substring(0, index));
+                String rightExpression = getValidSubstring(expression.substring(index + 1, expression.length()));
                 return new Node(c, getNewChild(leftExpression), getNewChild(rightExpression));
             }
         }
@@ -176,6 +174,29 @@ public class Evaluator {
             }
         }
         return (double)v.element();
+    }
+
+    private String replace(String str){
+        str = str.replaceAll("sqrt", "" + SQRT);
+
+        StringBuffer newStr = new StringBuffer();
+        for (int i = 0; i < str.length(); i++) {
+            if (str.charAt(i) == '^') {
+                newStr.append(SQUARE);
+                i++;
+            }
+            else {
+                newStr.append(str.charAt(i));
+            }
+        }
+        return newStr.toString();
+    }
+
+    private String getValidSubstring(String str) {
+        while (str.charAt(0) == '(' && str.charAt(str.length() -1) == ')') {
+            str = str.substring(1, str.length() - 1);
+        }
+        return str;
     }
 
 }
