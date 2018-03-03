@@ -2,13 +2,18 @@ import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
 import java.awt.*;
+import java.awt.event.*;
 import java.util.Stack;
 
-
-public class BasicMode {
+// TODO: add checking validity of the expression when clicking equals
+// TODO: fix entering with keyboard
+// TODO: allow leading minus for negative numbers.
+public class BasicMode extends KeyAdapter {
 
     private static final int BUTTON_WIDTH = 50;
     private static final int BUTTON_HEIGHT = 30;
+
+    private static final char[] validChars = {0,1,2,3,4,5,6,7,8,9,'(',')','+','-','*','/', '%', Evaluator.SQUARE, Evaluator.SQRT};
 
     private JTextArea displayArea;
     private JTextField inputField;
@@ -21,6 +26,7 @@ public class BasicMode {
     // used for undo; stores previous entries
     private Stack<String> previousExpressions;
 
+    private JFrame frame;
 
 
     public BasicMode() {
@@ -28,7 +34,7 @@ public class BasicMode {
         bracketCounter = 0;
         previousExpressions = new Stack<>();
 
-        final JFrame frame = new JFrame("Basic mode");
+        frame = new JFrame("Basic mode");
         frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         Container contentPane = frame.getContentPane();
 
@@ -66,6 +72,10 @@ public class BasicMode {
 
         contentPane.add(all);
         frame.setLocationRelativeTo(null);
+        frame.setFocusable(true);
+        frame.addKeyListener(this);
+        frame.setFocusableWindowState(true);
+        frame.setAutoRequestFocus(true);
         //frame.setResizable(false);
         frame.pack();
         frame.setVisible(true);
@@ -410,4 +420,69 @@ public class BasicMode {
     private void showWarning() {
         JOptionPane.showMessageDialog(null, "Invalid operation.", "Invalid operation.", JOptionPane.WARNING_MESSAGE);
     }
+
+    @Override
+    public void keyTyped(KeyEvent e) {
+        char c = e.getKeyChar();
+        if (c == '+' ||
+                c == '-' ||
+                c == '*' ||
+                c == '/') {
+            operatorClicked("" + c);
+        }
+        else if (e.getKeyCode() == KeyEvent.VK_DELETE) {
+            clearInputField();
+        }
+        else if (e.getKeyCode() == KeyEvent.VK_DECIMAL || c == '.') {
+            decimalPointClicked();
+        }
+        else if (c == KeyEvent.VK_UNDO) {
+            undoClicked();
+        }
+        else if (c == KeyEvent.VK_V) {
+            sqrtClicked();
+        }
+        else if (e.getKeyChar() == Evaluator.SQUARE) {
+            squareClicked();
+        }
+        else if (c == KeyEvent.VK_LEFT_PARENTHESIS) {
+            openingBracketClicked();
+        }
+        else if (c == KeyEvent.VK_RIGHT_PARENTHESIS) {
+            closingBracketClicked();
+        }
+        else if (c == KeyEvent.VK_ENTER) {
+            equalsClicked();
+        }
+        else if (e.getKeyChar() == '%') {
+            percentClicked();
+        }
+        else if (c == KeyEvent.VK_0 ||
+                c == KeyEvent.VK_1 ||
+                c == KeyEvent.VK_2 ||
+                c == KeyEvent.VK_3 ||
+                c == KeyEvent.VK_4 ||
+                c == KeyEvent.VK_5 ||
+                c == KeyEvent.VK_6 ||
+                c == KeyEvent.VK_7 ||
+                c == KeyEvent.VK_8 ||
+                c == KeyEvent.VK_9 ||
+                c == KeyEvent.VK_NUMPAD0 ||
+                c == KeyEvent.VK_NUMPAD1 ||
+                c == KeyEvent.VK_NUMPAD2 ||
+                c == KeyEvent.VK_NUMPAD3 ||
+                c == KeyEvent.VK_NUMPAD4 ||
+                c == KeyEvent.VK_NUMPAD5 ||
+                c == KeyEvent.VK_NUMPAD6 ||
+                c == KeyEvent.VK_NUMPAD7 ||
+                c == KeyEvent.VK_NUMPAD8 ||
+                c == KeyEvent.VK_NUMPAD9) {
+            updateInputField("" + e.getKeyChar());
+        }
+        else {
+            // Do nothing.
+        }
+
+    }
+
 }
