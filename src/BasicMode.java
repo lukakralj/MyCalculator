@@ -17,7 +17,6 @@ public class BasicMode extends KeyAdapter {
 
     private JTextArea displayArea;
     private JTextField inputField;
-    private JScrollPane display;
     // on entering '(' increase by 1, on entering ')' decrease by 1; check if 0 before adding.
     // for expression to be valid, counter must equal 0
     private int bracketCounter;
@@ -26,15 +25,13 @@ public class BasicMode extends KeyAdapter {
     // used for undo; stores previous entries
     private Stack<String> previousExpressions;
 
-    private JFrame frame;
-
 
     public BasicMode() {
         decimalPointEntered = false;
         bracketCounter = 0;
         previousExpressions = new Stack<>();
 
-        frame = new JFrame("Basic mode");
+        JFrame frame = new JFrame("Basic mode");
         frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         Container contentPane = frame.getContentPane();
 
@@ -51,7 +48,7 @@ public class BasicMode extends KeyAdapter {
         displayArea.setLineWrap(false);
         displayArea.setEditable(false);
 
-        display = new JScrollPane(displayArea);
+        JScrollPane display = new JScrollPane(displayArea);
         display.setPreferredSize(new Dimension(frame.getWidth(), 100));
         display.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
         display.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
@@ -351,7 +348,7 @@ public class BasicMode extends KeyAdapter {
         Evaluator evaluator = new Evaluator(str);
         String result = evaluator.getResult();
         if (result.startsWith("-")) {
-            result = "(0-" + result + ")";
+            result = "(0" + result + ")";
         }
         updateDisplayField(str, result);
         clearInputField();
