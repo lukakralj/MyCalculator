@@ -3,6 +3,9 @@ import com.sun.istack.internal.Nullable;
 /**
  * This class represent a node of the binary tree. Each node can have
  * a parent, a left child, and a right child. Each node can hold a value of any object type.
+ *
+ * @author Luka Kralj
+ * @version 30 March 2018
  */
 public class Node {
     private Object value;

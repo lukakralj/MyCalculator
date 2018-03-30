@@ -8,6 +8,13 @@ import java.util.Stack;
 // TODO: add checking validity of the expression when clicking equals
 // TODO: fix entering with keyboard
 // TODO: allow leading minus for negative numbers.
+
+/**
+ * This class displays a simple calculator.
+ *
+ * @author Luka Kralj
+ * @version 30 March 2018
+ */
 public class BasicMode extends KeyAdapter {
 
     private static final int BUTTON_WIDTH = 50;
@@ -15,17 +22,19 @@ public class BasicMode extends KeyAdapter {
 
     private static final char[] validChars = {0,1,2,3,4,5,6,7,8,9,'(',')','+','-','*','/', '%', Evaluator.SQUARE, Evaluator.SQRT};
 
-    private JTextArea displayArea;
-    private JTextField inputField;
+    private JTextArea displayArea; // Results shown here.
+    private JTextField inputField; // Expressions entered here.
     // on entering '(' increase by 1, on entering ')' decrease by 1; check if 0 before adding.
     // for expression to be valid, counter must equal 0
     private int bracketCounter;
-    //  if a decimal point has just been entered we cannot enter it again until we reach the next number
+    //  if a decimal point has just been entered we cannot enter it again until we reach the next operator
     private boolean decimalPointEntered;
     // used for undo; stores previous entries
     private Stack<String> previousExpressions;
 
-
+    /**
+     * Construct the basic calculator.
+     */
     public BasicMode() {
         decimalPointEntered = false;
         bracketCounter = 0;
@@ -78,6 +87,11 @@ public class BasicMode extends KeyAdapter {
         frame.setVisible(true);
     }
 
+    /**
+     * Creates all the buttons that are needed for the input.
+     *
+     * @return Panel with all the buttons to be added to the calculator.
+     */
     private JPanel createButtons() {
 
         JPanel allFlow = new JPanel(new FlowLayout());
@@ -262,19 +276,36 @@ public class BasicMode extends KeyAdapter {
         return allFlow;
     }
 
+    /**
+     * Clears the expression currently displayed.
+     */
     private void clearInputField(){
         inputField.setText("");
         enableDecimalPoint();
     }
 
+    /**
+     * Adds a new character (number,...) to the expression.
+     *
+     * @param newCharacter To be added at the end of expression.
+     */
     private void updateInputField(String newCharacter) {
         inputField.setText(inputField.getText() + newCharacter);
     }
 
+    /**
+     * Updates the display are to include the expression and its result.
+     *
+     * @param expression Expression to be added.
+     * @param result Result of the expression.
+     */
     private void updateDisplayField(String expression, String result) {
         displayArea.append(expression + "\n= " + result + "\n\n");
     }
 
+    /**
+     * Undo button was clicked. Set the expression to the last entered expression, if any.
+     */
     private void undoClicked() {
         if (previousExpressions.isEmpty()) {
             clearInputField();
@@ -284,6 +315,10 @@ public class BasicMode extends KeyAdapter {
         }
     }
 
+    /**
+     * Delete the last character of the current expression.
+     * TODO: add more checks what to delete.
+     */
     private void deleteClicked() {
         // Delete the last character.
         String str = inputField.getText();
@@ -292,6 +327,9 @@ public class BasicMode extends KeyAdapter {
         }
     }
 
+    /**
+     * Adds a square to the expression.
+     */
     private void squareClicked() {
         if (canEnterSymbol()) {
             inputField.setText(inputField.getText() + "^2");
@@ -301,6 +339,9 @@ public class BasicMode extends KeyAdapter {
         }
     }
 
+    /**
+     * Adds the symbol for square root as "sqrt(" to the expression.
+     */
     private void sqrtClicked() {
         if (!canEnterSymbol()) {
             inputField.setText(inputField.getText() + "sqrt(");
@@ -311,12 +352,15 @@ public class BasicMode extends KeyAdapter {
         }
     }
 
+    /**
+     * Decimal point was clicked. It is added to the expression if and only if the expression would still be valid.
+     */
     private void decimalPointClicked() {
-        char last = '+';
+        char last = ' '; // placeholder
         if (!inputField.getText().equals("")) {
             last = inputField.getText().charAt(inputField.getText().length()-1);
         }
-        if (!decimalPointEntered && !(last == '+' || last == '-' || last == '/' || last == '*' || last == '(' || last == ')' || last == '%')) {
+        if (!decimalPointEntered && !(last == ' ' || last == '+' || last == '-' || last == '/' || last == '*' || last == '(' || last == ')' || last == '%')) {
             decimalPointEntered = true;
             updateInputField(".");
         }
@@ -325,10 +369,17 @@ public class BasicMode extends KeyAdapter {
         }
     }
 
+    /**
+     * Allows a decimal point to be entered.
+     */
     private void enableDecimalPoint() {
         decimalPointEntered = false;
     }
 
+    /**
+     * Adds percentage sign to the expression. This sign takes the expression in front of it and
+     * divides it by 100 when evaluated, for example: 25.4% = 0.254 and 25.4%% = 0.00254
+     */
     private void percentClicked() {
         if (canEnterSymbol()) {
             updateInputField("%");
@@ -356,6 +407,11 @@ public class BasicMode extends KeyAdapter {
 
     }
 
+    /**
+     * Add operator to the expression.
+     *
+     * @param newCharacter Operator to add.
+     */
     private void operatorClicked(String newCharacter) {
         if(canEnterSymbol()) {
             updateInputField(newCharacter);
@@ -370,6 +426,9 @@ public class BasicMode extends KeyAdapter {
         }
     }
 
+    /**
+     * Add opening bracket to the expression.
+     */
     private void openingBracketClicked() {
         String expression = inputField.getText();
         if (expression.equals("")) {
@@ -390,6 +449,9 @@ public class BasicMode extends KeyAdapter {
         }
     }
 
+    /**
+     * Adds closing bracket to the expression.
+     */
     private void closingBracketClicked() {
         if (bracketCounter > 0 && canEnterSymbol()) {
             updateInputField(")");
@@ -401,6 +463,12 @@ public class BasicMode extends KeyAdapter {
         }
     }
 
+    /**
+     * Checks whether the symbol, such as operators and brackets can be added.
+     * Needed to maintain validity of the expression.
+     *
+     * @return True if the symbol can be added.
+     */
     private boolean canEnterSymbol() {
         String expression = inputField.getText();
         if (expression.equals("")) {
@@ -414,10 +482,21 @@ public class BasicMode extends KeyAdapter {
         return true;
     }
 
+    /**
+     * Whenever a user attempts to enter an invalid combination of symbols this warning is shown.
+     */
     private void showWarning() {
         JOptionPane.showMessageDialog(null, "Invalid operation.", "Invalid operation.", JOptionPane.WARNING_MESSAGE);
     }
 
+    /**
+     * This method is intended to accept inputs entered with the keyboard.
+     * There is still quite a lot of problems with it. It seems that the key codes are not matching with the constants.
+     * Also the focus is lost once the user clicks one of the buttons.
+     *
+     * TODO: debug
+     * @param e
+     */
     @Override
     public void keyTyped(KeyEvent e) {
         char c = e.getKeyChar();
